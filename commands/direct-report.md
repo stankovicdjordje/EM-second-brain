@@ -22,7 +22,7 @@ Performance Review and AI Competency Framework are explicitly out of scope for t
 
 This makes the recurring "did anything from that 1-on-1 need to go in the vault, and is this person's file still in the right shape?" check a repeatable command instead of a fresh manual pass every time - the owner reviews and picks, nothing gets assumed.
 
-This command is for a **live conversation** where the owner can just say which boxes to check. For the **unattended** path (a scheduled check with no one there to reply), see the `direct-report-transcript-poll` scheduled task and its companion `/direct-report-apply-review` command instead - those write the same kind of checklist to a note under `Logs/Direct Report Reviews/To Do/` with a single master "reviewed" checkbox, so the owner can review and check things off later (including directly in Obsidian) and have it picked up automatically.
+This command is for a **live conversation** where the owner can just say which boxes to check. For the **unattended** path (a scheduled check with no one there to reply), see the `direct-report-transcript-poll` scheduled task and its companion `/direct-report-apply-review` command instead - those write the same kind of checklist to a note under that person's own `Transcripts/To Review/` subfolder (alongside their Profile Card, Skills Matrix, etc. under `Knowledge Base/People/`) with a single master "reviewed" checkbox, so the owner can review and check things off later (including directly in Obsidian) and have it picked up automatically.
 
 ---
 
