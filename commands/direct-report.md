@@ -22,6 +22,8 @@ Performance Review and AI Competency Framework are explicitly out of scope for t
 
 This makes the recurring "did anything from that 1-on-1 need to go in the vault, and is this person's file still in the right shape?" check a repeatable command instead of a fresh manual pass every time - the owner reviews and picks, nothing gets assumed.
 
+When this command (or the unattended `direct-report-transcript-poll` scheduled task) is used to produce a checklist note for later review rather than a live chat exchange, the owner can check boxes at their own pace - directly in Obsidian, since checkbox clicks there edit the underlying markdown in place - and then run `/direct-report-apply-review <person>` to turn exactly those checks into real vault edits and tasks.
+
 ---
 
 **AI-first rule:** Every note created or updated by this command MUST follow `references/ai-first-rules.md` - `## For future Claude` preamble, rich frontmatter (`type`, `date`, `tags`, `ai-first: true`, plus type-specific fields), recency markers per external claim, mandatory `[[wikilinks]]` for every person/project/concept referenced, sources preserved verbatim with URLs inline, and confidence levels where applicable. If that path does not resolve from your working directory, search upward for it; if you still cannot read it, say so before writing rather than producing a note that silently skips the rule. The vault is for future-Claude retrieval - not human reading.
