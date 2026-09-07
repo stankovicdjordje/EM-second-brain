@@ -23,7 +23,19 @@ The argument is a direct report's name, optionally followed by a date (e.g. `Dmy
 6. Update each edited file's `updated:` frontmatter date to today.
 7. Append a short `## Applied (<today's date>)` section at the bottom of the review note listing exactly what was applied and where (or "reviewed, nothing was checked to apply" if only the master box was checked).
 8. Move the note from `Logs/Direct Report Reviews/To Do/<filename>` to `Logs/Direct Report Reviews/Done/<filename>` (same filename, just relocated - this is the actual completion signal, not a frontmatter flag).
-9. Notify the owner: post a message to Slack channel `C0C03CTQLGZ` (a private channel with only the owner in it - use this channel ID directly, do NOT search for or DM the owner's user profile) confirming what happened, e.g. "✅ <Person>'s 1-on-1 review has been applied and moved to Done. Changes: <one-line summary>." Always send this Slack confirmation regardless of whether this command was triggered live in chat or by the hourly `direct-report-apply-review-poll` scheduled task - if it was live in chat, also report the same summary there.
+9. Notify the owner in two ways, always, regardless of whether this command was triggered live in chat or by the hourly `direct-report-apply-review-poll` scheduled task:
+   a. **Slack**, posted to channel `C0C03CTQLGZ` (a private channel with only the owner in it - use this channel ID directly, do NOT search for or DM the owner's user profile). Format as a bulleted breakdown, not a single line - the point is to make it obvious at a glance what changed vs. what didn't:
+      ```
+      ✅ <Person>'s 1-on-1 review has been applied and moved to Done.
+
+      Applied:
+      • <one bullet per checked item that was actually applied, plainly stated - or "Nothing checked - reviewed only" if the master box was the only thing checked>
+
+      Left unchanged (not checked):
+      • <one bullet per itemized box that was left unchecked - omit this whole section if every itemized box was checked>
+      ```
+   b. **Desktop push notification** (the `PushNotification` tool, `status: "proactive"`) - one line, under 200 characters, e.g. "✅ <Person>'s review applied & moved to Done - N item(s) changed." This is a genuine separate alert channel (not routed through Slack), since Slack cannot notify the owner about messages posted under their own identity.
+   If this command was invoked live in chat, also report the same bulleted summary there - don't skip the in-chat report just because Slack/push were sent.
 
 This closes the loop the scheduled poller opens: a new transcript triggers a checklist note in `To Do/` and a Slack ping, the owner reviews at their own pace (including directly in Obsidian, since checkbox clicks there edit the underlying markdown in place) and checks the master box when done, and either this command (run on demand) or the `direct-report-apply-review-poll` scheduled task (checking `To Do/` hourly) turns that into real vault changes, moves the note to `Done/`, and confirms back over Slack - no live chat exchange required to re-litigate what was already decided.
 
