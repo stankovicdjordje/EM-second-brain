@@ -2,8 +2,8 @@
 type: person
 role: <Role, e.g. Software Engineer / Competence Lead>
 facet: Profile Card
-company: Vaimo
-tags: [person, direct-report, profile-card, vaimo]
+company: <Company>
+tags: [person, direct-report, profile-card]
 date: <YYYY-MM-DD, first built>
 updated: <YYYY-MM-DD, last restructured/updated>
 ai-first: true
@@ -18,7 +18,7 @@ Profile-card record for <Name> - one of four facet files alongside `<Name> - AI 
 
 # <Name> - Profile Card
 
-**Role:** <Role>, Vaimo<, project/team context if relevant>
+**Role:** <Role>, <Company><, project/team context if relevant>
 
 ## Where they're headed
 

@@ -2,8 +2,8 @@
 type: person
 role: <Role, e.g. Software Engineer / Competence Lead>
 facet: Skills Matrix
-company: Vaimo
-tags: [person, direct-report, skills-matrix, vaimo]
+company: <Company>
+tags: [person, direct-report, skills-matrix]
 date: <YYYY-MM-DD, first built>
 updated: <YYYY-MM-DD, last restructured/updated>
 ai-first: true
@@ -18,7 +18,7 @@ Skills-matrix record for <Name> - a fourth facet file alongside `<Name> - Profil
 
 # <Name> - Skills Matrix
 
-**Role:** <Role>, Vaimo<, project/team context if relevant>
+**Role:** <Role>, <Company><, project/team context if relevant>
 
 ## Strong / demonstrated
 
@@ -44,5 +44,5 @@ Keep this to **~4 rows**. Only genuinely open, concrete, technical items belong 
 
 ## Reference
 
-- Full self-evaluated technology ratings: Vaimo skills matrix spreadsheet (Google Sheets)
+- Full self-evaluated technology ratings: <Company> skills matrix spreadsheet (Google Sheets)
 - Full gap history, including resolved items: [[<Name> - AI Competency Framework]]
