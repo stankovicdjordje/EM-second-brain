@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/eugeniughelbur/obsidian-second-brain">
-    <img src="media/banner.png" alt="obsidian-second-brain: one brain, eight platforms, 50 commands. A cross-platform skill for Obsidian that runs on Claude Code, Codex, Gemini, OpenCode, Antigravity, Hermes, Pi, and Grok Bot." width="100%" />
+    <img src="media/banner.png" alt="obsidian-second-brain: one brain, eight platforms, 53 commands. A cross-platform skill for Obsidian that runs on Claude Code, Codex, Gemini, OpenCode, Antigravity, Hermes, Pi, and Grok Bot." width="100%" />
   </a>
 </p>
 
@@ -264,7 +264,7 @@ Free transcript via youtube-transcript-api. Optional metadata + top comments via
   +------------------------------------------+
 ```
 
-50 commands total. The calendar command (`/obsidian-calendar`) and the direct-report trio (`/direct-report`, `/direct-report-apply-review`, `/direct-report-trigger`) are Claude Code only (they need the Google Calendar MCP, or the Google Drive + Slack MCPs, respectively), so the Codex / Gemini / OpenCode / Hermes / Pi / Agent Skills builds ship 46.
+53 commands total. The calendar command (`/obsidian-calendar`), the direct-report trio (`/direct-report`, `/direct-report-apply-review`, `/direct-report-trigger`), and the meeting-prep trio (`/meeting-prep`, `/meeting-prep-trigger`, `/meeting-prep-apply`) are Claude Code only (they need the Google Calendar MCP, or the Google Drive + Slack MCPs, respectively), so the Codex / Gemini / OpenCode / Hermes / Pi / Agent Skills builds ship 46.
 
 **Layer 1** saves, organizes, ingests, reconciles, exports, schedules your calendar, and maintains your vault.
 **Layer 2** challenges your ideas, surfaces hidden patterns, bridges unrelated domains, and graduates ideas into projects.
@@ -274,7 +274,7 @@ Free transcript via youtube-transcript-api. Optional metadata + top comments via
 
 ---
 
-## 50 Commands
+## 53 Commands
 
 ### Operations -- Claude remembers
 
@@ -327,6 +327,9 @@ Free transcript via youtube-transcript-api. Optional metadata + top comments via
 | `/direct-report [name]` | Diffs a direct report's latest 1-on-1 transcript against their vault files, proposes a checkbox list of updates - nothing is written until you say which to keep |
 | `/direct-report-apply-review [name] [date]` | Reads back a checked-off `/direct-report` review note and applies exactly what's checked - the confirm-and-write half of the pair |
 | `/direct-report-trigger [name]` | On-demand version of the `direct-report-transcript-poll` scheduled task for one person - runs the scan-and-notify step right now instead of waiting for the schedule |
+| `/meeting-prep [name]` | Pulls a person's last 4 1-on-1 transcripts and builds a live, chat-only meeting-prep checklist - compiles your picks into talking points right here, writes nothing to the vault |
+| `/meeting-prep-trigger [name]` | On-demand version of the `meeting-prep-daily-trigger` scheduled task for one person - writes the same checklist to an Obsidian file to review later, instead of presenting in chat |
+| `/meeting-prep-apply [name] [date]` | Reads back a checked-off meeting-prep note, compiles the checked items into a talking-points-and-questions list, and moves the note to `Done/` |
 
 ### Context -- Claude knows you
 
@@ -573,7 +576,7 @@ PostCompact -> obsidian-bg-agent.sh -> claude -p (headless) -> vault updated
 
 **Bounded recall (opt-in):** on every prompt, a `UserPromptSubmit` hook injects a small brief of the most relevant vault notes - max 4 notes, ~900 chars - or **nothing at all** when confidence is low (abstention beats noise). Read-only, fail-closed, and every inject/abstain decision is logged to `<vault>/.claude-runs/` for audit. Ships inert; arm it with `OBSIDIAN_RECALL_ENABLED=1` per [hooks/recall.hook.example.json](hooks/recall.hook.example.json).
 
-**Custom scheduled tasks (example):** the built-in agents above are fixed; `/direct-report` and `/direct-report-apply-review` ship a worked example of wiring up your own. [`references/direct-report-transcript-poll.md`](references/direct-report-transcript-poll.md) and [`references/direct-report-apply-review-poll.md`](references/direct-report-apply-review-poll.md) are full, fill-in-the-placeholders task prompts plus trigger setup instructions (cron schedule, required MCP access) for turning a live command into an unattended, recurring check via a local task scheduler. `/direct-report-trigger` is the on-demand escape hatch for the same pattern - run the scan-and-notify half right now, for one person, instead of waiting for the scheduled run.
+**Custom scheduled tasks (example):** the built-in agents above are fixed; `/direct-report` and `/direct-report-apply-review` ship a worked example of wiring up your own. [`references/direct-report-transcript-poll.md`](references/direct-report-transcript-poll.md) and [`references/direct-report-apply-review-poll.md`](references/direct-report-apply-review-poll.md) are full, fill-in-the-placeholders task prompts plus trigger setup instructions (cron schedule, required MCP access) for turning a live command into an unattended, recurring check via a local task scheduler. `/direct-report-trigger` is the on-demand escape hatch for the same pattern - run the scan-and-notify half right now, for one person, instead of waiting for the scheduled run. The meeting-prep trio follows the same shape one day earlier in the cycle: [`references/meeting-prep-daily-trigger.md`](references/meeting-prep-daily-trigger.md) documents a calendar-driven scheduled task that scans today's 1-on-1s and writes a prioritized checklist per person (sourced from their last 4 1-on-1 transcripts, weighted by recency) to review before the meeting; `/meeting-prep-trigger` is its on-demand, single-person escape hatch, `/meeting-prep` is a fully live, chat-only version of the same pull, and `/meeting-prep-apply` compiles whichever checked items - from either path - into the actual talking-points list.
 
 ---
 
@@ -642,7 +645,7 @@ Rather than ask you to take that on faith, here is what each build currently pas
 
 <img src="media/plugin-install.gif" alt="Installing obsidian-second-brain through the Claude Code plugin marketplace: marketplace add, plugin install, status enabled." width="100%" />
 
-That ships all 50 commands, the skill manual, the session-context hook, the opt-in background agent (inert until you arm it - see [hooks/postcompact.hook.example.json](hooks/postcompact.hook.example.json)), and the vault MCP server. Then tell Claude where your vault lives by adding to the `env` section of `~/.claude/settings.json`:
+That ships all 53 commands, the skill manual, the session-context hook, the opt-in background agent (inert until you arm it - see [hooks/postcompact.hook.example.json](hooks/postcompact.hook.example.json)), and the vault MCP server. Then tell Claude where your vault lives by adding to the `env` section of `~/.claude/settings.json`:
 
 ```json
 "env": { "OBSIDIAN_VAULT_PATH": "/path/to/your/vault" }
