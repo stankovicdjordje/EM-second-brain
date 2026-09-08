@@ -4,7 +4,7 @@ This is the before-the-meeting counterpart to `direct-report-transcript-poll` (w
 
 It never sends anything else automatically. It only ever produces a new checklist note under a person's own `Meeting Prep/To Review/` plus one combined Slack message and a push notification.
 
-Registered in this vault as taskId `meeting-prep-daily-trigger`, cron `0 9 * * *` (9am daily local time, the scheduler adds a small jitter - actual next-run may land a few minutes past the hour). See that task's own `SKILL.md` (under `/Users/djordjestankovic/.claude/scheduled-tasks/meeting-prep-daily-trigger/`) for the exact registered prompt - this file documents the design, not a second copy to keep in sync by hand.
+Registered in this vault as taskId `meeting-prep-daily-trigger`, cron `0 9 * * *` (9am daily local time, the scheduler adds a small jitter - actual next-run may land a few minutes past the hour). See that task's own `SKILL.md` (under `~/.claude/scheduled-tasks/meeting-prep-daily-trigger/`) for the exact registered prompt - this file documents the design, not a second copy to keep in sync by hand.
 
 ## Design notes
 
