@@ -12,7 +12,7 @@ Standalone. No CLI, no Python, no network, no account. It shells out to nothing.
 |---|---|---|
 | Frontmatter present, with `date`, `type`, `tags` | error | Nothing can filter a note that carries no metadata |
 | `ai-first: true` flag | warning | Without it the note is invisible to any filter on the flag |
-| A `## For future Claude` preamble | error | An agent retrieving one note alone must be able to judge relevance without reading all of it |
+| A `## For future agent` preamble | error | An agent retrieving one note alone must be able to judge relevance without reading all of it |
 | Cited sources carry an `as of` date | warning | An undated external claim reads as true forever |
 
 Click any result to open the note.
@@ -46,5 +46,5 @@ enable it in Settings.
 
 This is the spec's checks, standing alone. The
 [full project](https://github.com/eugeniughelbur/obsidian-second-brain) enforces
-the same rules at write time across seven CLI agents and adds retrieval,
+the same rules at write time across eight CLI agents and adds retrieval,
 research and scheduled maintenance. You do not need any of it to use this.

@@ -18,12 +18,12 @@ is required either way.
 
 import json
 import os
-import re
 import sys
 from datetime import datetime
 from pathlib import Path
 
 from .lib.config import VAULT_PATH
+from .lib.vault_terms import topic_terms
 
 MAX_BASELINE_NOTES = 8
 MAX_BASELINE_CHARS_PER_NOTE = 1500
@@ -38,7 +38,10 @@ def _vault_scan_dirs() -> list[str]:
 
 def vault_scan(topic: str) -> list[dict]:
     """Find vault notes whose path or content references the topic. Returns sorted hits."""
-    keywords = [w for w in re.split(r"\s+", topic.lower()) if len(w) > 2]
+    # Tokenize via the search tokenizer, never a private copy: the old
+    # whitespace split + len(w) > 2 here returned nothing for CJK topics and
+    # survived #159/#188/#192 because each fix landed elsewhere (issue #212).
+    keywords = topic_terms(topic)
     if not keywords:
         return []
     hits: list[dict] = []
@@ -48,7 +51,11 @@ def vault_scan(topic: str) -> list[dict]:
             continue
         for path in root.rglob("*.md"):
             try:
-                text = path.read_text(errors="ignore").lower()
+                # encoding named: vault notes are UTF-8 (Obsidian writes them so)
+                # and the platform default on Windows is the ANSI code page
+                # (cp1252 on a Western-European system), where a CJK topic then
+                # matched nothing.
+                text = path.read_text(encoding="utf-8", errors="ignore").lower()
             except OSError:
                 continue
             score = sum(text.count(k) for k in keywords)
@@ -64,12 +71,20 @@ def vault_scan(topic: str) -> list[dict]:
     return hits[:MAX_BASELINE_NOTES]
 
 
+def _excerpt(abs_path: str) -> str:
+    """The first MAX_BASELINE_CHARS_PER_NOTE characters of a vault note, read as
+    UTF-8 (Obsidian's encoding): the platform default on Windows is the ANSI
+    code page (cp1252 on a Western-European system), where every non-ASCII
+    character in an excerpt went onward as mojibake."""
+    text = Path(abs_path).read_text(encoding="utf-8", errors="ignore")
+    return text[:MAX_BASELINE_CHARS_PER_NOTE].strip()
+
+
 def load_baseline(hits: list[dict]) -> str:
     chunks = []
     for h in hits:
         try:
-            text = Path(h["abs_path"]).read_text(errors="ignore")[:MAX_BASELINE_CHARS_PER_NOTE]
-            chunks.append(f"### [[{h['path']}]] (score={h['score']})\n\n{text.strip()}\n")
+            chunks.append(f"### [[{h['path']}]] (score={h['score']})\n\n{_excerpt(h['abs_path'])}\n")
         except OSError:
             continue
     return "\n---\n".join(chunks) if chunks else "(vault has no existing notes referencing this topic)"
@@ -180,7 +195,7 @@ def run_free_deep(topic: str, academic: bool) -> int:
     baseline_notes = []
     for h in hits:
         try:
-            excerpt = Path(h["abs_path"]).read_text(errors="ignore")[:MAX_BASELINE_CHARS_PER_NOTE].strip()
+            excerpt = _excerpt(h["abs_path"])
         except OSError:
             excerpt = ""
         baseline_notes.append({"path": h["path"], "score": h["score"], "excerpt": excerpt})
@@ -346,7 +361,7 @@ def run_paid_deep(topic: str) -> int:
     # AI-first note save (Phase 5)
     now = datetime.now()
     preamble = (
-        f"For future Claude: This is a vault-first deep research delta on \"{topic}\" "
+        f"For future agent: This is a vault-first deep research delta on \"{topic}\" "
         f"performed on {now.strftime('%Y-%m-%d %H:%M')}. The vault was scanned first ({len(hits)} relevant notes), "
         f"gaps were identified, and {len(queries)} targeted queries filled them via Perplexity (web) + Grok (X). "
         f"This note focuses on WHAT'S NEW vs the vault's prior knowledge, contradictions to resolve, and recommended updates. "
@@ -364,7 +379,7 @@ def run_paid_deep(topic: str) -> int:
         "ai-first": True,
     }
     note_body = (
-        f"## For future Claude\n\n{preamble}\n\n"
+        f"## For future agent\n\n{preamble}\n\n"
         f"## Topic\n\n{topic}\n\n"
         f"## Vault Baseline Found\n\n"
         + ("\n".join(f"- [[{h['path']}]] (score={h['score']})" for h in hits) if hits else "(none)")

@@ -40,7 +40,7 @@ To wire it: `bash scripts/setup.sh "/path/to/vault"` or run `/obsidian-setup`.
 Use standard file tools (Read, Write, Edit, Glob) against the vault path. The vault is plain markdown, so every operation in this skill works this way with no setup. This is the normal path in Claude Code - the commands below use these tools directly.
 
 **Method B - MCP server (optional, mainly for non-Claude-Code clients):**
-This repo ships its own MCP server at `integrations/obsidian-mcp-server/` that exposes the vault as tools (`obsidian_search`, `obsidian_read_note`, `obsidian_save_note`, `obsidian_capture`, plus curator tools). It exists so other MCP clients - Hermes Agent, Claude Desktop, Cursor - can use the vault as a knowledge layer; in Claude Code itself, Method A is simpler and preferred. If those `obsidian_*` tools happen to be available in your client, you may use them instead of raw file tools. Setup lives in `integrations/obsidian-mcp-server/README.md` (it is `uv run --with 'mcp<2' python .../server.py` with `OBSIDIAN_VAULT_PATH` set, not an `npx` package).
+This repo ships its own MCP server at `integrations/obsidian-mcp-server/` that exposes the vault as tools (`obsidian_search`, `obsidian_read_note`, `obsidian_save_note`, `obsidian_capture`, plus curator tools). It exists so other MCP clients - Hermes Agent, Claude Desktop, Cursor - can use the vault as a knowledge layer; in Claude Code itself, Method A is simpler and preferred. If those `obsidian_*` tools happen to be available in your client, you may use them instead of raw file tools. Setup lives in `integrations/obsidian-mcp-server/README.md` (it is `uv run --no-project --with 'mcp<2' python .../server.py` with `OBSIDIAN_VAULT_PATH` set, not an `npx` package). Since the bookkeeping change, every write through the server also validates the note, adds the index entry, appends the operation-log line, and runs `OBSIDIAN_POST_WRITE_CMD` when set - see `integrations/obsidian-mcp-server/README.md`, "Bookkeeping after writes".
 
 ### 1. First time in a vault → read `_CLAUDE.md`
 
@@ -102,12 +102,12 @@ See `references/vault-schema.md` for full structural details.
 ## Core Operating Principles
 
 ### AI-first vault rule (applies to every note)
-The vault is designed for **future-Claude** to read and reason over, not for human review. Every note Claude writes - across all 46 commands - must follow `references/ai-first-rules.md`:
+The vault is designed for **future agent** to read and reason over, not for human review. Every note Claude writes - across all 46 commands - must follow `references/ai-first-rules.md`:
 
 1. **Self-contained context** - each note explains itself; don't rely on backlinks alone
-2. **"For future Claude" preamble** - 2-3 sentence summary so Claude can decide relevance in 10 seconds
+2. **"For future agent" preamble** - 2-3 sentence summary so any compatible agent can decide relevance in 10 seconds
 3. **Rich, consistent frontmatter** - `type`, `date`, `tags`, `ai-first: true`, plus type-specific fields (see `ai-first-rules.md` for schemas per note type)
-4. **Recency markers per claim** - "Mem0 raised $24M (as of 2026-04, mem0.ai)" so future-Claude knows what to verify
+4. **Recency markers per claim** - "Mem0 raised $24M (as of 2026-04, mem0.ai)" so future agent knows what to verify
 5. **Sources preserved verbatim** - every external claim has its source URL inline
 6. **Cross-links mandatory** - every person/project/idea/decision uses `[[wikilinks]]`
 7. **Confidence levels** - `stated | high | medium | speculation` where applicable
@@ -566,6 +566,7 @@ Steps:
 3. Spawn parallel subagents to handle each category simultaneously:
    - **Links agent**: verify broken links, attempt to resolve them
    - **Duplicates agent**: confirm duplicates are truly the same concept, not just similar names
+   - **Taxonomy agent**: only fires when `<vault>/_meta/taxonomy.md` exists (format in `references/taxonomy-format.md`) - opt-in, zero findings without it. `tag_synonym` (a tag is a known synonym of a canonical tag) offers a per-note rename to the canonical form with confirmation; `tag_not_in_taxonomy` (a tag matches neither a canonical tag nor a synonym) is informational only, never auto-fixed
    - **Frontmatter agent**: identify notes missing required fields by type
    - **Staleness agent**: check overdue tasks and unfilled template syntax
    - **Orphans agent**: check orphaned notes and empty folders
@@ -576,8 +577,8 @@ Steps:
    - **Typed-edge lint agent**: run `python scripts/link_graph.py --path <vault> --lint` - validates the `relations:` typed-edge graph (Rule 6 § Typed edges in `references/ai-first-rules.md`): contradiction cycles (critical), unknown types / dangling targets / self-edges (warning), missing inverse edges (info). Returns zero findings on vaults that use no typed edges yet
 4. Merge agent results and group by severity:
    - 🔴 Critical: broken links, unfilled template syntax, contradictions, typed-edge contradiction cycles
-   - 🟡 Warning: duplicates, stale tasks, missing frontmatter, stale claims, concept gaps, typed-edge problems (unknown type, dangling target, self-edge)
-   - ⚪ Info: orphaned notes, empty folders, missing inverse edges
+   - 🟡 Warning: duplicates, stale tasks, missing frontmatter, stale claims, concept gaps, typed-edge problems (unknown type, dangling target, self-edge), tag-synonym findings
+   - ⚪ Info: orphaned notes, empty folders, missing inverse edges, tags not in the taxonomy
 5. Present a clean summary with counts per category
 6. For safe fixes (missing frontmatter, obvious duplicates, creating pages for concept gaps), offer to fix them automatically
 7. For destructive fixes (archiving, merging, resolving contradictions), list them and ask for explicit confirmation before touching anything
@@ -598,6 +599,21 @@ In short: reads the vault path from `_CLAUDE.md`, reports the current `index_cov
 **Measures how well vault search actually finds the right note - so improving retrieval is a number, not a hunch.**
 
 Hybrid command backed by `scripts/eval/retrieval_eval.py`, which reuses the REAL search engine (`integrations/obsidian-mcp-server/vault_ops.py`, the term-frequency, title-weighted ranking behind `/obsidian-find` and the MCP connector). It bootstraps its own eval set from the vault (an LLM writes a question per sampled note, avoiding the note's title words so it tests retrieval not string-match; the note is the gold answer), then scores recall@1/3/5/10 and MRR and lists the failures - misses and notes buried below #3, naming which note wrongly ranked #1. Claude interprets the numbers, turns failures into ranked retrieval fixes (each a hypothesis to re-measure on the same cases), and optionally writes an AI-first baseline note. Generated cases hold private note paths and are gitignored. The first run on a 1,000+ note vault scored **0% recall@10** on paraphrased questions (long `raw/` transcripts and `log.md` dominate term-frequency ranking) - proving the cheap structural fixes (exclude `raw/`, weight by `type:`) should be measured before reaching for a vector index.
+
+---
+
+### `/obsidian-merge <canonical> <retired> | --from-health`
+
+**Merges two near-duplicate notes that `/obsidian-health` found and stopped at. Dry run by default; the retired note becomes a redirect, never a deletion.**
+
+Health is read-only by contract, so the merge was the manual step everyone skipped and the same pairs came back every run. `scripts/merge_notes.py` does the mechanical half; you compose the merged body, because deciding what actually contradicts between two notes is judgment.
+
+Steps:
+1. Resolve the pair: two paths from the user (first survives, second retires; confirm if the richer note is the second), or `--from-health` to list the 2-file duplicate groups from a live `vault_health.check_duplicates()` run. A group of 3+ is never auto-paired.
+2. Read both notes in full. Compose the merged body per `references/ai-first-rules.md`: one `## For future agent` preamble naming both originals, both provenance trails kept, real contradictions listed with dates rather than resolved, every still-relevant `[[wikilink]]` from both sides carried over. Write it to a scratch file.
+3. Dry run: `uv run --directory "SKILL_ROOT" scripts/merge_notes.py --path <vault> --canonical <a> --retire <b> --merged-body-file <scratch>`. It prints the frontmatter conflicts (canonical wins, the retired value goes under `merged_from:`; list fields such as `tags` and `aliases` are unioned instead), the alias folded in, and the full text of both proposed notes. Show it verbatim.
+4. Ask for explicit confirmation, then re-run the identical command with `--apply`. Dry run and apply share one `compute_merge()`, so what was previewed is what gets written.
+5. Report which note survived, which became `type: redirect` (schema in `references/ai-first-rules.md`, Documented exceptions), the conflicts, and the contradictions the body documents. Log `merge | <retired> -> <canonical>` per the operation-log convention.
 
 ---
 
@@ -680,7 +696,7 @@ Backed by `scripts/link_graph.py` (deterministic link extraction - no whole-vaul
 
 **Scaffolds a new obsidian-second-brain command through a short interview - no markdown or frontmatter editing.**
 
-A guided conversation (intent, name, category, trigger phrases, behavior steps, AI-first compliance, external APIs) writes a fully-formed `commands/<name>.md` that the build pipeline picks up on the next `bash scripts/build.sh`, flowing into all seven platform builds. The optional seed pre-fills suggestions. Every command created this way lands AI-first-compliant by construction. (This is the command that creates commands; it does not run on itself.)
+A guided conversation (intent, name, category, trigger phrases, behavior steps, AI-first compliance, external APIs) writes a fully-formed `commands/<name>.md` that the build pipeline picks up on the next `bash scripts/build.sh`, flowing into all eight platform builds. The optional seed pre-fills suggestions. Every command created this way lands AI-first-compliant by construction. (This is the command that creates commands; it does not run on itself.)
 
 ---
 
@@ -1244,17 +1260,20 @@ A background agent that fires automatically whenever Claude compacts the convers
 
 ## Write-Time AI-First Validator (PostToolUse Hook)
 
-A non-blocking validator that fires after every `Write` or `Edit` on a markdown file inside the configured vault. It warns when the file fails the AI-first rule (missing required frontmatter, missing `## For future Claude` preamble, broken YAML) and surfaces the warning back to Claude on stderr so the agent can repair the note in the same turn.
+A non-blocking validator that fires after every `Write` or `Edit` on a markdown file inside the configured vault. It warns when the file fails the AI-first rule (missing required frontmatter, missing `## For future agent` preamble, broken YAML) and surfaces the warning back to the active agent on stderr so it can repair the note in the same turn.
 
 **What it checks:**
 1. The file has frontmatter delimiters (`--- ... ---`)
 2. No tabs in frontmatter (YAML requires spaces)
 3. Required AI-first fields present: `date:`, `type:`, `tags:`, `ai-first: true`
-4. The body contains a `## For future Claude` preamble (rule #2 of [`references/ai-first-rules.md`](references/ai-first-rules.md))
+4. The body contains a `## For future agent` preamble, or its Obsidian callout form `> [!info]- For future agent` (rule #2 of [`references/ai-first-rules.md`](references/ai-first-rules.md))
 
 **What it skips:**
 - Files outside `OBSIDIAN_VAULT_PATH`
-- Files under `raw/`, `templates/`, `_export/`, `.obsidian/`, `.git/`, `.trash/`
+- Files under `raw/`, `templates/`, `_export/`, `.obsidian/`, `.git/`, `.trash/`, `.claude/` (slash-command copies and settings are not notes - #249)
+- Payloads with no `tool_name` (nothing fired)
+
+**What it refuses to skip silently:** a payload that names a tool but carries no path key the hook knows (`file_path`, `filePath`, `notebook_path`). The matcher fired, so a write happened and went unchecked; the hook prints one stderr line naming the tool and the payload keys and exits 1 (non-blocking, the write stands) instead of exiting 0 and looking like "not a vault file".
 
 **Setup:**
 
@@ -1284,9 +1303,9 @@ A non-blocking validator that fires after every `Write` or `Edit` on a markdown 
    }
    ```
 
-**Behavior:** Non-blocking. If a write fails the AI-first rule, Claude sees the warning text on stderr (with one line per missing requirement) and can re-write the file in the same conversation turn to fix it. The original write is NOT reverted.
+**Behavior:** Non-blocking. If a write fails the AI-first rule, the hook emits JSON with `systemMessage` (shown to the user) and `decision`/`reason` plus `additionalContext` (fed to the model), one line per missing requirement, with the warning mirrored to stderr for logs. The agent can re-write the file in the same conversation turn to fix it. The original write is NOT reverted.
 
-**Other platforms (Codex CLI / Gemini CLI / OpenCode):** The hook script ships in `dist/<platform>/hooks/` for all platform builds, but each platform's hook system differs. Wiring it up beyond Claude Code is left to the platform's own configuration. See [`hooks/validate-ai-first.hook.yaml`](hooks/validate-ai-first.hook.yaml) for the platform-neutral spec.
+**Other platforms (Codex CLI / Gemini CLI / OpenCode):** The hook ships only in the `claude-code` build (`dist/claude-code/hooks/`); the other platform builds do not include a `hooks/` directory. If your platform has a post-write hook system, wire it yourself from the source repo: [`hooks/validate-ai-first.hook.yaml`](hooks/validate-ai-first.hook.yaml) is the platform-neutral spec and `hooks/validate-ai-first.sh` the implementation. Without host wiring, the AI-first rule is enforced by the command instructions alone.
 
 ---
 

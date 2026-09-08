@@ -66,12 +66,12 @@ def test_self_link_does_not_prevent_orphanhood(tmp_path):
 
 
 def test_same_title_different_content_is_not_a_duplicate_warning(tmp_path):
-    """Shared frontmatter + '## For future Claude' boilerplate used to push two
+    """Shared frontmatter + '## For future agent' boilerplate used to push two
     unrelated notes past the 0.6 similarity threshold."""
     vault = tmp_path / "vault"
     (vault / "Concepts").mkdir(parents=True)
     boiler = ("---\ntype: concept\ndate: 2026-07-11\ntags: [concept]\nai-first: true\n---\n\n"
-              "## For future Claude\n\n")
+              "## For future agent\n\n")
     (vault / "Concepts" / "Google Ads.md").write_text(
         boiler + "Concept A is entirely about the Google Ads auction platform and bidding.\n",
         encoding="utf-8",
@@ -90,7 +90,7 @@ def test_true_duplicates_still_warn(tmp_path):
     vault = tmp_path / "vault"
     (vault / "A").mkdir(parents=True)
     (vault / "B").mkdir()
-    body = "---\ntype: concept\n---\n\n## For future Claude\n\nIdentical body text here.\n"
+    body = "---\ntype: concept\n---\n\n## For future agent\n\nIdentical body text here.\n"
     (vault / "A" / "Same Note.md").write_text(body, encoding="utf-8")
     (vault / "B" / "same-note.md").write_text(body, encoding="utf-8")
 
@@ -192,3 +192,25 @@ def test_absent_attachment_is_reported_separately_from_a_wanted_note(tmp_path):
     missing = _issues(payload, "missing_attachment")
     assert len(wanted) == 1 and "Ще не написана" in wanted[0]["message"]
     assert len(missing) == 1 and "diagram.png" in missing[0]["message"]
+
+
+def test_invalid_tags_are_flagged_and_valid_ones_are_not(tmp_path):
+    """#221: Obsidian silently strikes through digits-only, dotted and spaced tags.
+    check_tag_syntax names each bad tag with its fix; Unicode, nested and
+    letter-digit tags pass."""
+    (tmp_path / "bad.md").write_text(
+        "---\ntype: note\ndate: 2026-08-27\ntags: [project, 33, 2.0]\nai-first: true\n---\n\n"
+        "## For future agent\n\nbody\n", encoding="utf-8")
+    (tmp_path / "bad_block.md").write_text(
+        "---\ntype: note\ndate: 2026-08-27\ntags:\n  - person\n  - q3 2026\nai-first: true\n---\n\n"
+        "## For future agent\n\nbody\n", encoding="utf-8")
+    (tmp_path / "good.md").write_text(
+        "---\ntype: note\ndate: 2026-08-27\ntags: [store-33, area/sub, знания, 学习, v2_0]\n"
+        "ai-first: true\n---\n\n## For future agent\n\nbody\n", encoding="utf-8")
+    payload = _health(tmp_path)
+    found = _issues(payload, "invalid_tag")
+    tags = sorted(i["tag"] for i in found)
+    assert tags == ["2.0", "33", "q3 2026"], tags
+    assert all(i["severity"] == "warning" for i in found)
+    assert not [i for i in found if "good.md" in i["files"]]
+    assert payload["counts"]["Invalid tags"] == 3
