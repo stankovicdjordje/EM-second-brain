@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/eugeniughelbur/obsidian-second-brain">
-    <img src="media/banner.png" alt="obsidian-second-brain: one brain, eight platforms, 53 commands. A cross-platform skill for Obsidian that runs on Claude Code, Codex, Gemini, OpenCode, Antigravity, Hermes, Pi, and Grok Bot." width="100%" />
+    <img src="media/banner.png" alt="obsidian-second-brain: one brain, eight platforms, 54 commands. A cross-platform skill for Obsidian that runs on Claude Code, Codex, Gemini, OpenCode, Antigravity, Hermes, Pi, and Grok Bot." width="100%" />
   </a>
 </p>
 
@@ -264,7 +264,7 @@ Free transcript via youtube-transcript-api. Optional metadata + top comments via
   +------------------------------------------+
 ```
 
-53 commands total. The calendar command (`/obsidian-calendar`), the direct-report trio (`/direct-report`, `/direct-report-apply-review`, `/direct-report-trigger`), and the meeting-prep trio (`/meeting-prep`, `/meeting-prep-trigger`, `/meeting-prep-apply`) are Claude Code only (they need the Google Calendar MCP, or the Google Drive + Slack MCPs, respectively), so the Codex / Gemini / OpenCode / Hermes / Pi / Agent Skills builds ship 46.
+54 commands total. The calendar command (`/obsidian-calendar`), the direct-report trio (`/direct-report`, `/direct-report-apply-review`, `/direct-report-trigger`), the meeting-prep trio (`/meeting-prep`, `/meeting-prep-trigger`, `/meeting-prep-apply`), and `/task-briefing-trigger` are Claude Code only (they need the Google Calendar MCP, the Google Drive + Slack MCPs, or the Slack MCP, respectively), so the Codex / Gemini / OpenCode / Hermes / Pi / Agent Skills builds ship 46.
 
 **Layer 1** saves, organizes, ingests, reconciles, exports, schedules your calendar, and maintains your vault.
 **Layer 2** challenges your ideas, surfaces hidden patterns, bridges unrelated domains, and graduates ideas into projects.
@@ -274,7 +274,7 @@ Free transcript via youtube-transcript-api. Optional metadata + top comments via
 
 ---
 
-## 53 Commands
+## 54 Commands
 
 ### Operations -- Claude remembers
 
@@ -330,6 +330,7 @@ Free transcript via youtube-transcript-api. Optional metadata + top comments via
 | `/meeting-prep [name]` | Pulls a person's last 4 1-on-1 transcripts and builds a live, chat-only meeting-prep checklist - compiles your picks into talking points right here, writes nothing to the vault |
 | `/meeting-prep-trigger [name]` | On-demand version of the `meeting-prep-daily-trigger` scheduled task for one person - writes the same checklist to an Obsidian file to review later, instead of presenting in chat |
 | `/meeting-prep-apply [name] [date]` | Reads back a checked-off meeting-prep note, compiles the checked items into a talking-points-and-questions list, and moves the note to `Done/` |
+| `/task-briefing-trigger` | On-demand version of the `daily-task-briefing` scheduled task - reads your own Kanban board and reports what's due today, this week, and overdue, right now instead of waiting for the scheduled morning run |
 
 ### Context -- Claude knows you
 
@@ -645,7 +646,7 @@ Rather than ask you to take that on faith, here is what each build currently pas
 
 <img src="media/plugin-install.gif" alt="Installing obsidian-second-brain through the Claude Code plugin marketplace: marketplace add, plugin install, status enabled." width="100%" />
 
-That ships all 53 commands, the skill manual, the session-context hook, the opt-in background agent (inert until you arm it - see [hooks/postcompact.hook.example.json](hooks/postcompact.hook.example.json)), and the vault MCP server. Then tell Claude where your vault lives by adding to the `env` section of `~/.claude/settings.json`:
+That ships all 54 commands, the skill manual, the session-context hook, the opt-in background agent (inert until you arm it - see [hooks/postcompact.hook.example.json](hooks/postcompact.hook.example.json)), and the vault MCP server. Then tell Claude where your vault lives by adding to the `env` section of `~/.claude/settings.json`:
 
 ```json
 "env": { "OBSIDIAN_VAULT_PATH": "/path/to/your/vault" }
