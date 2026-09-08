@@ -28,8 +28,13 @@ The argument is a person's name, optionally followed by a date (e.g. `<Person> 2
    - Don't just copy the checklist line verbatim - it was written as a scannable proposal with priority tags and recurrence counts, not as something to say out loud; strip that scaffolding out of the final phrasing.
    - Never add a talking point that wasn't checked, and never invent detail beyond what the checked item and the note's own sourced material support.
 7. Present the compiled, area-grouped bullet list directly in chat - this is the primary deliverable, needed before the meeting starts. Lead with a one-line header naming who the meeting is with and when.
-8. Append the compiled list to the note itself, under a new `## Talking Points` section at the bottom with the same area sub-headings (`### Follow-ups`, `### Growth`, etc.) used in chat, so it's preserved alongside the checklist it came from, then append a short `## Compiled (<today's date>)` note below that stating which itemized boxes were checked vs left unchecked (or "reviewed, nothing checked - no talking points compiled" if only the master box was checked).
-9. Move the note from `<folder>/Meeting Prep/To Review/<filename>` to `<folder>/Meeting Prep/Done/<filename>` (same filename, just relocated).
+8. **Rewrite the note entirely** rather than appending to it - the checklist (priority tags, recurrence counts, checkboxes, the Review status section) was scratch scaffolding for the owner's selection step and is not wanted in the final result. The note that lands in `Done/` contains ONLY:
+   - Minimal frontmatter (`type: meeting-prep`, `person`, `role`, `company`, `tags`, `date`, `ai-first: true` - drop `meetings-reviewed` and any other checklist-stage-only fields)
+   - A 1-2 sentence `## For future Claude` preamble noting this is compiled talking points, distilled from a checklist that is not preserved
+   - A `# <Person> - Talking Points - <date>` heading
+   - The area-grouped bullet list itself (`### Follow-ups`, `### Growth`, etc.), exactly as presented in chat
+   No checkboxes anywhere, no priority/recurrence tags, no "Compiled" bookkeeping section, none of the original checklist items that weren't selected.
+9. Move the note from `<folder>/Meeting Prep/To Review/<filename>` to `<folder>/Meeting Prep/Done/<filename>` (same filename, just relocated) - write the rewritten content from step 8 to that Done/ path directly rather than moving the old file and editing it in place.
 10. Notify the owner in two ways, in addition to the in-chat bullet list from step 7 (always send both, regardless of how this command was invoked):
     a. **Slack**, posted to the vault's configured direct-report/meeting-prep notification channel (the same channel `meeting-prep-daily-trigger` uses - a private channel with only the owner in it. Use that channel directly, do NOT search for or DM the owner's user profile). Keep this brief - the full list already went to chat:
        ```
