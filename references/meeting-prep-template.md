@@ -30,6 +30,12 @@ Open commitments and unresolved threads carried from prior meetings, highest pri
 - [ ] **(High, 3/4 meetings)** <item> - <what to ask or check now>
 - [ ] **(Medium, 1/4 meetings)** <item> - <what to ask or check now>
 
+## Challenges
+Obstacles the person is currently facing, highest priority first - both technical/delivery-team challenges (blockers, scoping fights, tooling or process friction) and personal ones (workload strain, confidence gaps, career-pressure points) they've actually raised. Like Follow-ups, each item notes recurrence across the last 4 meetings gathered - recurrence is a severity signal here too. Cross-check severity against any existing vault framing of the same issue (this person's Profile Card growth-watch section, Performance Review, or AI Competency Framework) rather than reading severity from a single transcript mention alone - a challenge the vault already documents as long-running or escalating outranks a first-time mention.
+
+- [ ] **(High, 2/4 meetings)** <item> - <what to ask or check now>
+- [ ] **(Medium, 1/4 meetings)** <item> - <what to ask or check now>
+
 ## Growth
 Career development, skill/competency progress, and goal check-ins worth raising - highest priority first.
 

@@ -26,9 +26,12 @@ NOTIFICATION CHANNEL: <e.g. a Slack channel ID, private, owner-only - post notif
 
 GOAL: check whether any of the owner's direct reports has a new 1-on-1 transcript since it was last checked, and if so, produce a review checklist note in that person's own "Transcripts/To Review/" subfolder (never apply anything automatically) and notify the owner, including a one-click Obsidian deep link to the note.
 
-PEOPLE (name -> vault folder, containing that person's Profile Card/Skills Matrix/etc. plus a "Transcripts/" subfolder):
-- <Person> -> "Knowledge Base/People/<Team>/<Person> (<Role>)/"
-(This list will grow as more direct reports are added - if the vault's own _CLAUDE.md or Knowledge Base/People/ folder structure indicates additional people with a "Transcripts/" subfolder already set up, include them too rather than treating this list as exhaustive forever.)
+PEOPLE (name -> vault folder, containing that person's Profile Card/Skills Matrix/etc. plus a "Transcripts/" subfolder). Note each person's cadence if it isn't weekly - it changes which transcript title pattern to search for in step 1 (e.g. "<Person> / <Owner> - Weekly" vs "<Person> / <Owner> - Biweekly"):
+- <Person> -> "Knowledge Base/People/<Team>/<Person> (<Role>)/" (weekly)
+(This list will grow as more direct reports are added - if the vault's own _CLAUDE.md or Knowledge Base/People/ folder structure indicates additional people with a "Transcripts/" subfolder already set up, include them too rather than treating this list as exhaustive forever - UNLESS they're named in an EXCLUDE list below.)
+
+EXCLUDE (optional - people who used to be direct reports and still have a "Transcripts/" folder from before, but should no longer be polled, e.g. after a team change):
+- <Person> -> "<their folder>" (their existing Transcripts/ history stays in the vault untouched - this just stops polling them going forward; if a name here resurfaces via the "additional people" auto-discovery rule above, skip them anyway)
 
 STATE FILE: each person's own "<their folder>/Transcripts/_state.md" (sibling to "To Review/" and "Done/" inside their "Transcripts/" folder - never scan or move it as if it were a review note). If it doesn't exist for a person, create it (frontmatter matching the vault's ai-first rules, then a single line: "- Last processed doc id = <id>, date = <date>"). Read it first, per person, to know what's already been handled.
 
