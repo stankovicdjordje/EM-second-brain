@@ -12,7 +12,11 @@ description: Scans your Slack DMs and group DMs from the last 24 hours, works ou
 - DIGEST_CHANNEL_ID: <ID of a private channel only you can see, e.g. C0123ABCD. Open the channel > channel details > bottom of the About tab>
 - WORKSPACE_URL: <e.g. https://yourcompany.slack.com>
 
-Requirements: the Slack connector must be enabled in Claude (search, read channel, read thread, send message). Suggested schedule: weekdays at 15:00 local time (create it with the Schedule skill / "Scheduled" tab in the Claude desktop app, pasting this file as the task prompt or pointing to it).
+To use it, each person needs to:
+
+1. Enable the Slack connector in Claude (search, read channel, read thread, send message).
+2. Fill in the four placeholders.
+3. Create a scheduled task (for example weekdays at 15:00) and paste the file's "Prompt" section as the task prompt. The file's `name` and `description` frontmatter is the skill format. Alternatively, drop the file into `~/.claude/scheduled-tasks/slack-dm-reply-check/`.
 
 ## Prompt
 
