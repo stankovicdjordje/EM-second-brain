@@ -264,7 +264,7 @@ Free transcript via youtube-transcript-api. Optional metadata + top comments via
   +------------------------------------------+
 ```
 
-55 commands total. The calendar command (`/obsidian-calendar`), the direct-report trio (`/direct-report`, `/direct-report-apply-review`, `/direct-report-trigger`), the meeting-prep trio (`/meeting-prep`, `/meeting-prep-trigger`, `/meeting-prep-apply`), `/task-briefing-trigger`, and `/knowledge-capture` are Claude Code only (they need the Google Calendar MCP, the Google Drive + Slack MCPs, the Slack MCP, or the Google Drive + Atlassian MCPs plus local ffmpeg/Whisper, respectively), so the Codex / Gemini / OpenCode / Hermes / Pi / Agent Skills builds ship 46.
+56 commands total. The calendar command (`/obsidian-calendar`), the direct-report trio (`/direct-report`, `/direct-report-apply-review`, `/direct-report-trigger`), the meeting-prep trio (`/meeting-prep`, `/meeting-prep-trigger`, `/meeting-prep-apply`), `/task-briefing-trigger`, `/team-competency-map` (needs Claude Code artifacts), and `/knowledge-capture` are Claude Code only (the others need the Google Calendar MCP, the Google Drive + Slack MCPs, the Slack MCP, or the Google Drive + Atlassian MCPs plus local ffmpeg/Whisper, respectively), so the Codex / Gemini / OpenCode / Hermes / Pi / Agent Skills builds ship 46.
 
 **Layer 1** saves, organizes, ingests, reconciles, exports, schedules your calendar, and maintains your vault.
 **Layer 2** challenges your ideas, surfaces hidden patterns, bridges unrelated domains, and graduates ideas into projects.
@@ -331,6 +331,7 @@ Free transcript via youtube-transcript-api. Optional metadata + top comments via
 | `/meeting-prep-trigger [name]` | On-demand version of the `meeting-prep-daily-trigger` scheduled task for one person - writes the same checklist to an Obsidian file to review later, instead of presenting in chat |
 | `/meeting-prep-apply [name] [date]` | Reads back a checked-off meeting-prep note, compiles the checked items into a talking-points-and-questions list, and moves the note to `Done/` |
 | `/task-briefing-trigger` | On-demand version of the `daily-task-briefing` scheduled task - runs that task's own instructions (`~/.claude/scheduled-tasks/daily-task-briefing/SKILL.md`) right now instead of waiting for the scheduled morning run: reports what's due today, this week, and overdue, and does the same board/file reconciliation. Falls back to a read-only report if the scheduled task isn't set up |
+| `/team-competency-map [notes]` | Rebuilds the Team Competency Map - a one-page mind map of every direct report's current knowledge, gaps, who-can-teach-whom and technical direction - from `Templates/Team Competency Map Template.html`, saves it in the vault, republishes the same private artifact and logs what changed since the last run |
 
 ### Context -- Claude knows you
 

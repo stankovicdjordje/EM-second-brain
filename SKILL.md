@@ -367,6 +367,7 @@ These fork-specific commands depend on MCP connectors (Google Calendar, Google D
 - `/meeting-prep-trigger [name]`: writes the same checklist to the vault for later review.
 - `/meeting-prep-apply [name] [date]`: compiles a checked-off meeting-prep note into talking points and moves it to `Done/`.
 - `/task-briefing-trigger`: on-demand daily task briefing from the owner's Kanban board.
+- `/team-competency-map [notes]`: rebuilds the one-page mind map of direct reports' knowledge, gaps, mentoring matches and technical direction from the vault template, saves it in the vault and republishes the same private artifact.
 - `/knowledge-capture [recording]`: turns a knowledge-sharing recording into an AI-first vault note (timestamped sections, screenshots, local Whisper transcript), then publishes it to a user-provided Confluence page. Prerequisites and the recording brief: `references/knowledge-capture-playbook.md`; note shape: `references/knowledge-capture-template.md`.
 
 ### `/obsidian-save`
