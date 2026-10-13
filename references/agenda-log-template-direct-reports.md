@@ -33,7 +33,7 @@ Carried forward to the next meeting. Tag items sourced from someone else's notes
 ## Meeting log
 
 - **YYYY-MM-DD** (<context, e.g. first biweekly; N min>)
-    - Agenda: [Notes - <Name> / Đorđe - <Weekly/Biweekly>](<Google Doc URL>)
+    - Agenda: [Notes - <Name> / Đorđe - <Weekly/Biweekly>](<Google Doc URL>?tab=t.0#heading=<h.id of this meeting's date heading>)
     - **Covered**
         - <Agenda item>: <what was said, one line>
     - **Partially covered**
@@ -59,7 +59,7 @@ Carried forward to the next meeting. Tag items sourced from someone else's notes
 Scope: direct reports only. Tanya, Kaisa and other non-direct-report contacts keep their own log format (see their Agenda Logs); do not use this one for them.
 How to use this template
 1. Copy to the person's folder as "<Name> - Agenda Log.md" and fill every <placeholder>. In the tags line, replace `team-name` with the team tag, e.g. `rogue-raccoons` or `pink-pirates`.
-2. The agenda doc link goes at the top of the file and inside every meeting entry.
+2. The plain agenda doc link goes at the top of the file and under Reference. The "Agenda:" link inside every meeting entry must open THAT meeting's date heading in the doc, never just the doc: `<Google Doc URL ending in /edit>?tab=t.0#heading=<h.id>`. Find the id by exporting the doc as HTML (Drive `download_file_content` with `exportMimeType: text/html`, the content is base64) and taking the `id="h...."` of the heading whose text starts with the meeting date (e.g. "13 Oct 2026 | ..."; September may be spelled "Sept"). One export gives the ids for every date at once, so fix all entries in the same pass. If the date heading does not exist, use the plain doc link and say so in the reply. Never guess or reuse another meeting's id.
 3. After each meeting: sort each agenda item into Covered / Partially covered / Not covered against the full transcript. Do not trust the Gemini summary alone.
 4. Move Not covered and unanswered items into Open agenda items; move answered ones into the meeting entry with the date.
 5. Create a task plus board card for each [Đorđe] action item the same pass.
